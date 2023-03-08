@@ -3,6 +3,7 @@ package com.brivadigital.podplay.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.brivadigital.podplay.model.Episode
+import com.brivadigital.podplay.model.Podcast
 import com.brivadigital.podplay.repository.PodcastRepo
 import java.util.*
 
@@ -40,5 +41,31 @@ class PodcastViewModel(application: Application): AndroidViewModel(application) 
                 it.duration
             )
         }
+    }
+    private fun podcastToPodcastView(podcast: Podcast): PodcastViewData{
+        return PodcastViewData(
+            false,
+            podcast.feedTitle,
+            podcast.feedUrl,
+            podcast.feedDesc,
+            podcast.imageUrl,
+            episodesToEpisodesView(podcast.episodes)
+        )
+    }
+
+    fun getPodcast(podcastSummaryViewData: SearchViewModel.PodcastSummaryViewData):PodcastViewData?{
+        val repo = podacstRepo?: return null
+        val feedUrl = podcastSummaryViewData.feedUrl?: return null
+
+        val podcast = repo.getPodcast(feedUrl)
+
+        podcast?.let {
+            it.feedTitle = podcastSummaryViewData.name?:""
+            it.imageUrl = podcastSummaryViewData.imageUrl?:""
+            activePodcastViewData = podcastToPodcastView(it)
+
+            return activePodcastViewData
+        }
+        return null
     }
 }

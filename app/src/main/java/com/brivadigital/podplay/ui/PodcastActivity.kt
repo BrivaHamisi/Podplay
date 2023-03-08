@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings.Global
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
@@ -29,6 +30,7 @@ class PodcastActivity : AppCompatActivity(),
     private val searchViewModel by viewModels<SearchViewModel>()
     private lateinit var podcastListAdapter: PodcastListadapter
     private lateinit var databinding: ActivityPodcastBinding
+    private lateinit var searchMenuItem: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,16 +47,16 @@ class PodcastActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-// 1
+    // 1
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_search, menu)
-// 2
+    // 2
         val searchMenuItem = menu.findItem(R.id.search_item)
         val searchView = searchMenuItem?.actionView as SearchView
-// 3
+    // 3
         val searchManager = getSystemService(Context.SEARCH_SERVICE)
                 as SearchManager
-// 4
+    // 4
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         return true
     }
@@ -111,5 +113,16 @@ class PodcastActivity : AppCompatActivity(),
     }
     private fun hideProgressBar() {
         databinding.progressBar.visibility = View.INVISIBLE
+    }
+    companion object{
+        private const val TAG_DETAILS_FRAGMENT = "DetailsFragment"
+    }
+    private fun createPodcastDetailsFragment(): PodcastDetailsFragment{
+        var podcastDetailsFragment = supportFragmentManager.findFragmentByTag(TAG_DETAILS_FRAGMENT) as PodcastDetailsFragment
+
+        if (podcastDetailsFragment == null){
+            podcastDetailsFragment = PodcastDetailsFragment.newInstance()
+        }
+        return podcastDetailsFragment
     }
 }
